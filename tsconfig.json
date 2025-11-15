@@ -6,6 +6,6 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["src"], //bisa ditambah folder lain
+  "include": ["api", "collector", "proxy", "socket"], //bisa ditambah folder lain
 	"exclude": ["node_modules"]
 }
