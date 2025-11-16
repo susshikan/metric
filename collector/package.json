@@ -1,0 +1,19 @@
+{
+  "name": "collector",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "os-utils": "^0.0.14",
+    "redis": "^5.9.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/os-utils": "^0.0.4",
+    "@types/ws": "^8.18.1"
+  }
+}
