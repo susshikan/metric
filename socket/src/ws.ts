@@ -35,7 +35,7 @@ async function start() {
   while (true) {
     const reply: any = await redis.xRead(streams, { BLOCK: 0 });
 
-    if (!reply || Array.isArray(reply)) {
+    if (!reply || reply.length === 0) {
       continue
     }
     const stream = reply[0];
