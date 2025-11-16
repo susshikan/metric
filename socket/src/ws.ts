@@ -1,6 +1,25 @@
 import { WebSocketServer } from "ws";
 import { createClient } from "redis";
 
+type RpsPayload = {
+  id: string
+  rps: string;
+  timestamp: string;
+};
+
+type AccessLogPayload = {
+  id: string
+  method: string;
+  url: string;
+  status: string;
+  duration: string;
+  timestamp: string;
+};
+
+type SocketReply = | { stream: "rps_stream"; payload: RpsPayload } | { stream: "access_log_stream"; payload: AccessLogPayload };
+
+
+
 async function start() {
   const wss = new WebSocketServer({ port: 8080 });
   const redis = createClient({ url: "redis://redis:6379" });
@@ -14,21 +33,21 @@ async function start() {
   ];
 
   while (true) {
-    const reply = await redis.xRead(streams, { BLOCK: 0 });
+    const reply: any = await redis.xRead(streams, { BLOCK: 0 });
 
-    if (reply) {
-      const stream = reply[0];
-      const { name, messages } = stream;
-
-      messages.forEach((msg) => {
-        const json = {
-          stream: name,
-          id: msg.id,
-          payload: msg.message,
-        };
-        wss.clients.forEach(c => c.send(JSON.stringify(json)));
-      });
+    if (!reply || Array.isArray(reply)) {
+      continue
     }
+    const stream = reply[0];
+    const { name, messages } = stream;
+    messages.forEach((msg: any) => {
+      const json = {
+        stream: name,
+        id: msg.id,
+        payload: msg.message,
+      };
+      wss.clients.forEach(c => c.send(JSON.stringify(json)));
+    });
   }
 }
 

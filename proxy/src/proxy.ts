@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express'
 import { createProxyMiddleware } from "http-proxy-middleware";
 import { createClient } from "redis";
 
@@ -10,20 +10,19 @@ async function startProxy() {
     const app = express();
     console.log("Connected to Redis");
     let rpsCounter = 0;
-    setInterval(async () => {
+    setInterval(async () => { //get rps
         await redis.xAdd("rps_stream", "*", {
             rps: rpsCounter.toString(),
-            timestamp: Date.now().toString(),
+            timestamp: Date.now().toString(), //todo trim stream
         });
         rpsCounter = 0;
     }, 1000);
 
-    app.use((req, res, next) => {
+    app.use((req, res, next) => { //get log
         rpsCounter++;
         const start = Date.now();
         res.on("finish", async () => {
             const duration = Date.now() - start;
-
             await redis.xAdd("access_log_stream", "*", {
                 method: req.method,
                 url: req.originalUrl,
@@ -36,12 +35,11 @@ async function startProxy() {
         next();
     });
 
-    app.use(
-        "/",
+    app.use("/",
         createProxyMiddleware({
             target: TARGET,
             changeOrigin: true,
-            logger: "silent"
+            logLevel: 'silent'
         })
     );
 
