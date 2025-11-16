@@ -19,20 +19,17 @@ export default function App() {
 
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);
-      // RPS STREAM
       if (data.stream === "rps_stream") {
         setRps(Number(data.payload.rps));
       }
 
-      // ACCESS LOG STREAM
       if (data.stream === "access_log_stream") {
         setLogs((prev) => [...prev.slice(-30), data.payload]);
       }
 
-      // LOAD STREAM (CPU & MEMORY)
       if (data.stream === "load_stream") {
-        setCpu(Number(data.payload.cpu));       // cpu: "32.12"
-        setMem(Number(data.payload.mem));       // mem: "49.33"
+        setCpu(Number(data.payload.cpu));       
+        setMem(Number(data.payload.mem));       
       }
     };
 
