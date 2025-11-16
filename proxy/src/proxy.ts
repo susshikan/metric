@@ -15,6 +15,7 @@ async function startProxy() {
             rps: rpsCounter.toString(),
             timestamp: Date.now().toString(), //todo trim stream
         });
+        console.log(`RPS: ${rpsCounter}`)
         rpsCounter = 0;
     }, 1000);
 
@@ -30,6 +31,14 @@ async function startProxy() {
                 duration: duration.toString(),
                 timestamp: Date.now().toString(),
             });
+            const data = {
+                method: req.method,
+                url: req.originalUrl,
+                status: res.statusCode.toString(),
+                duration: duration.toString(),
+                timestamp: Date.now().toString(),
+            }
+            console.log(`log: ${JSON.stringify(data)}`)
         });
 
         next();

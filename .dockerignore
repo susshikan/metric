@@ -1,0 +1,34 @@
+# dependencies
+**/node_modules
+
+# builds
+**/dist
+**/build
+**/.next
+**/out
+
+# logs
+**/*.log
+
+# env
+**/.env
+**/.env.*
+!**/.env.example
+
+# editor
+.vscode
+.idea
+
+# system
+.DS_Store
+
+# TS cache
+**/*.tsbuildinfo
+
+# Git
+.git
+.gitignore
+
+# Docker local / dev files
+docker-compose.yml
+Dockerfile.dev
