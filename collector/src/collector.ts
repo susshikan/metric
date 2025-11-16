@@ -1,18 +1,32 @@
-import os from "os-utils";
+import si from "systeminformation";
 import { createClient } from "redis";
 
 async function main() {
     const redis = createClient({ url: "redis://redis:6379" });
     await redis.connect();
-    setInterval(() => {
-        os.cpuUsage(async (cpu) => { //get cpu trus kirim ke redis per 1 detik
-            await redis.xAdd("load_stream", "*", {
-                cpu: (cpu * 100).toFixed(2),
-                mem: (100 - os.freememPercentage() * 100).toFixed(2),
-                timestamp: Date.now().toString(),
-            },{
-                TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
-            });
+    setInterval(async () => {
+        const timestamp = Date.now().toString();
+
+        const cpuLoad = await si.currentLoad();
+        const cpuPercent = cpuLoad.currentLoad.toFixed(2);
+        const mem = await si.mem();
+        const memUsedPercent = ((1 - mem.available / mem.total) * 100).toFixed(2);
+        const disk = await si.fsSize();
+        const diskUsage = disk.find(d => d.mount === "/hostfs");
+        await redis.xAdd("load_stream", "*", {
+            cpu: cpuPercent,
+            mem: memUsedPercent,
+            timestamp: timestamp,
+        }, {
+            TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
+        });
+        await redis.xAdd("disk_usage", "*", {
+            total: (diskUsage?.size || 0).toString(),
+            used: (diskUsage?.used || 0).toString(),
+            free: (diskUsage?.available || 0).toString(),
+            timestamp: timestamp,
+        }, {
+            TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
         });
     }, 1000);
 }
