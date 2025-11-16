@@ -43,6 +43,8 @@ services:
       resources:
         limits:
           memory: 256m
+    volumes:
+      - /:/hostfs:ro
   
   dashboard:
     build: ./dashboard
