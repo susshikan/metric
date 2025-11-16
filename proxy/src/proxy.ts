@@ -10,15 +10,21 @@ async function startProxy() {
     const app = express();
     console.log("Connected to Redis");
     let rpsCounter = 0;
+    let error4xx = 0;
+    let error5xx = 0;
     setInterval(async () => { //get rps
         await redis.xAdd("rps_stream", "*", {
             rps: rpsCounter.toString(),
-            timestamp: Date.now().toString(), //todo trim stream
+            error4xx: error4xx.toString(),
+            error5xx: error5xx.toString(),
+            timestamp: Date.now().toString(),
         }, {
-            TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
+            TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
         });
         console.log(`RPS: ${rpsCounter}`)
         rpsCounter = 0;
+        error4xx = 0;
+        error5xx = 0;
     }, 1000);
 
     app.use((req, res, next) => { //get log
@@ -26,14 +32,19 @@ async function startProxy() {
         const start = Date.now();
         res.on("finish", async () => {
             const duration = Date.now() - start;
+            if ((req.statusCode || 400) >= 400 && (req.statusCode || 400) < 500) {
+                error4xx++
+            } else if ((req.statusCode || 500) >= 500) {
+                error5xx
+            }
             await redis.xAdd("access_log_stream", "*", {
                 method: req.method,
                 url: req.originalUrl,
                 status: res.statusCode.toString(),
                 duration: duration.toString(),
                 timestamp: Date.now().toString(),
-            },{
-                TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
+            }, {
+                TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
             });
             const data = {
                 method: req.method,
