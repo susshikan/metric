@@ -10,6 +10,8 @@ async function main() {
                 cpu: (cpu * 100).toFixed(2),
                 mem: (100 - os.freememPercentage() * 100).toFixed(2),
                 timestamp: Date.now().toString(),
+            },{
+                TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
             });
         });
     }, 1000);

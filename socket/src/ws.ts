@@ -29,7 +29,8 @@ async function start() {
 
   const streams = [
     { key: "rps_stream", id: "$" },
-    { key: "access_log_stream", id: "$" }
+    { key: "access_log_stream", id: "$" },
+    { key: "load_stream", id: "$"}
   ];
 
   while (true) {

@@ -14,6 +14,8 @@ async function startProxy() {
         await redis.xAdd("rps_stream", "*", {
             rps: rpsCounter.toString(),
             timestamp: Date.now().toString(), //todo trim stream
+        }, {
+            TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
         });
         console.log(`RPS: ${rpsCounter}`)
         rpsCounter = 0;
@@ -30,6 +32,8 @@ async function startProxy() {
                 status: res.statusCode.toString(),
                 duration: duration.toString(),
                 timestamp: Date.now().toString(),
+            },{
+                TRIM: {strategy: 'MINID', threshold: Date.now()-5*60*1000}
             });
             const data = {
                 method: req.method,
