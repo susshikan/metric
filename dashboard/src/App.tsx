@@ -15,11 +15,10 @@ export default function App() {
   const [mem, setMem] = useState(0);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket("ws://host.docker.internal:8080");
 
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);
-
       // RPS STREAM
       if (data.stream === "rps_stream") {
         setRps(Number(data.payload.rps));
