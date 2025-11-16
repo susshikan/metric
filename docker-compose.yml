@@ -5,6 +5,10 @@ services:
     image: redis:7
     ports:
       - "6379:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   proxy:
     build: ./proxy
@@ -14,6 +18,10 @@ services:
       - TARGET_API=http://host.docker.internal:3000
     depends_on:
       - redis
+    deploy:
+      resources:
+        limits:
+          memory: 256m
 
   ws-server:
     build: ./socket
@@ -21,12 +29,20 @@ services:
       - "8080:8080"
     depends_on:
       - redis
+    deploy:
+      resources:
+        limits:
+          memory: 256m
 
   collector:
     build: ./collector
     restart: unless-stopped
     depends_on:
       - redis
+    deploy:
+      resources:
+        limits:
+          memory: 256m
   
   dashboard:
     build: ./dashboard
@@ -34,3 +50,7 @@ services:
       - "5173:5173"
     depends_on:
       - ws-server
+    deploy:
+      resources:
+        limits:
+          memory: 512m
