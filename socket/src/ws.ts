@@ -30,7 +30,8 @@ async function start() {
   const streams = [
     { key: "rps_stream", id: "$" },
     { key: "access_log_stream", id: "$" },
-    { key: "load_stream", id: "$"}
+    { key: "load_stream", id: "$"},
+    { key: "docker_stats_stream", id: "$"}
   ];
 
   while (true) {
@@ -47,7 +48,7 @@ async function start() {
         id: msg.id,
         payload: msg.message,
       };
-  
+      console.log(json)
       wss.clients.forEach(c => c.send(JSON.stringify(json)));
     });
   }

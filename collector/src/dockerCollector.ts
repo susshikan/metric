@@ -43,7 +43,6 @@ async function collectDocker() {
 
     for (const c of containers) {
       const { data: curr } = await docker.get(`/containers/${c.Id}/stats?stream=false`);
-      console.log(curr)
       const prev = prevStats.get(c.Id);
 
       const cpu = calcCPU(curr, prev);

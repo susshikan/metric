@@ -44,8 +44,16 @@ export default function App() {
         setMem(Number(data.payload.mem));
       }
 
-      if (data.stream == "docker_stats_stream") {
-        setDocker(prev => prev.map(c => c.id === data.id ? { ...c, ...data } : c))
+      if (data.stream === "docker_stats_stream") {
+        console.log(docker)
+        const dataReal = data.payload
+        setDocker(prev => {
+          const exist = prev.some(c => (c.id === dataReal.id))
+          if (exist) {
+            return prev.map(c => c.id === dataReal.id ? { ...c, ...dataReal.id } : c)
+          }
+          return {...prev, dataReal}
+        })
       }
     };
 
