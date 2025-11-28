@@ -28,6 +28,7 @@ export default function App() {
       }
 
       if (data.stream === "load_stream") {
+        console.log(data.payload.cpu)
         setCpu(Number(data.payload.cpu));       
         setMem(Number(data.payload.mem));       
       }
