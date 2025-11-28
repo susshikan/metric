@@ -57,6 +57,8 @@ async function collectDocker() {
         memLimit: mem.limit.toString(),
         memPercent: mem.percent.toString(),
         timestamp: Date.now().toString()
+      }, {
+        TRIM: {strategy: "MAXLEN", threshold: 1000}
       });
 
       prevStats.set(c.Id, curr);
