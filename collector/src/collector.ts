@@ -1,9 +1,8 @@
 import si from "systeminformation";
 import { createClient } from "redis";
+import {redis} from './redis'
 
 async function main() {
-    const redis = createClient({ url: "redis://redis:6379" });
-    await redis.connect();
     setInterval(async () => {
         const timestamp = Date.now().toString();
 
@@ -20,6 +19,7 @@ async function main() {
         }, {
             TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
         });
+        console.log("tes")
         await redis.xAdd("disk_usage", "*", {
             total: (diskUsage?.size || 0).toString(),
             used: (diskUsage?.used || 0).toString(),
