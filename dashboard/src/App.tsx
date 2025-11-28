@@ -50,9 +50,9 @@ export default function App() {
         setDocker(prev => {
           const exist = prev.some(c => (c.id === dataReal.id))
           if (exist) {
-            return prev.map(c => c.id === dataReal.id ? { ...c, ...dataReal.id } : c)
+            return prev.map(c => c.id === dataReal.id ? { ...c, ...dataReal } : c)
           }
-          return {...prev, dataReal}
+          return [...prev, dataReal]
         })
       }
     };
