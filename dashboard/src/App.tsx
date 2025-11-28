@@ -8,11 +8,23 @@ interface LogEntry {
   timestamp: string;
 }
 
+interface dockerEntry {
+  id: string;
+  name: string;
+  image: string;
+  cpu: string;
+  memUsed: string;
+  memLimit: string;
+  memPercent: string;
+  timestamp: string;
+}
+
 export default function App() {
   const [rps, setRps] = useState(0);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [cpu, setCpu] = useState(0);
   const [mem, setMem] = useState(0);
+  const [docker, setDocker] = useState<dockerEntry[]>([]);
 
   useEffect(() => {
     const ws = new WebSocket("ws://host.docker.internal:8080");
@@ -28,9 +40,12 @@ export default function App() {
       }
 
       if (data.stream === "load_stream") {
-        console.log(data.payload.cpu)
-        setCpu(Number(data.payload.cpu));       
-        setMem(Number(data.payload.mem));       
+        setCpu(Number(data.payload.cpu));
+        setMem(Number(data.payload.mem));
+      }
+
+      if (data.stream == "docker_stats_stream") {
+        setDocker(prev => prev.map(c => c.id === data.id ? { ...c, ...data } : c))
       }
     };
 
@@ -66,6 +81,17 @@ export default function App() {
           </div>
         ))}
       </div>
+
+      <h3 style={{ marginTop: 40 }}>Docker stats</h3>
+      {docker.map(data => (
+        <div style={{
+          border: 5,
+          margin: 5
+        }}>
+          <h2>{data.name}</h2>
+          <h3>Mem: {data.memPercent}</h3>
+        </div>
+      ))}
     </div>
   );
 }

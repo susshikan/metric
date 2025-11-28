@@ -47,7 +47,7 @@ async function start() {
         id: msg.id,
         payload: msg.message,
       };
-      console.log(json)
+  
       wss.clients.forEach(c => c.send(JSON.stringify(json)));
     });
   }

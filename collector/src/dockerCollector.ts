@@ -40,7 +40,7 @@ const prevStats = new Map<string, any>();
 async function collectDocker() {
   try {
     const { data: containers } = await docker.get("/containers/json");
-    console.log(containers)
+
     for (const c of containers) {
       const { data: curr } = await docker.get(`/containers/${c.Id}/stats?stream=false`);
       console.log(curr)
