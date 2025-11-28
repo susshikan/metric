@@ -40,9 +40,10 @@ const prevStats = new Map<string, any>();
 async function collectDocker() {
   try {
     const { data: containers } = await docker.get("/containers/json");
-
+    console.log(containers)
     for (const c of containers) {
       const { data: curr } = await docker.get(`/containers/${c.Id}/stats?stream=false`);
+      console.log(curr)
       const prev = prevStats.get(c.Id);
 
       const cpu = calcCPU(curr, prev);
@@ -66,5 +67,4 @@ async function collectDocker() {
   }
 }
 
-// ===== Interval polling =====
 setInterval(collectDocker, 2000);

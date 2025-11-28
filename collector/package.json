@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "dist/collector.js",
   "scripts": {
-    "dev": "ts-node src/collector.ts",
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/collector.js"
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "axios": "^1.13.2",
