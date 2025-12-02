@@ -44,11 +44,13 @@ async function collectDocker() {
     for (const c of containers) {
       const { data: curr } = await docker.get(`/containers/${c.Id}/stats?stream=false`);
       const prev = prevStats.get(c.Id);
+      const { data: info } = await docker.get(`/containers/${c.Id}/json`);
+
 
       const cpu = calcCPU(curr, prev);
       const mem = parseMem(curr);
-      const restartCount = curr.State.RestartCount
-      const startedAt = new Date(curr.State.StartedAt).getTime();
+      const restartCount = info.State.RestartCount;
+      const startedAt = new Date(info.State.StartedAt).getTime();
       const uptimeSec = Math.floor((Date.now() - startedAt) / 1000);
 
       await redis.xAdd("docker_stats_stream", "*", {
@@ -60,7 +62,7 @@ async function collectDocker() {
         memLimit: mem.limit.toString(),
         memPercent: mem.percent.toString(),
         uptime: uptimeSec.toString(),
-        restartCount: restartCount,
+        restartCount: restartCount.toString(),
         timestamp: Date.now().toString()
       }, {
         TRIM: { strategy: "MAXLEN", threshold: 1000 }
