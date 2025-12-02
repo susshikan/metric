@@ -1,4 +1,3 @@
-import React from "react";
 import { LineChart, Line, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import type { ChartData } from "../types";
 import { Cpu } from "lucide-react";

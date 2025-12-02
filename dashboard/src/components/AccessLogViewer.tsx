@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { LogEntry } from "../types";
 import { FileText } from "lucide-react";
 
@@ -8,8 +8,6 @@ interface AccessLogViewerProps {
 
 export default function AccessLogViewer({ logs }: AccessLogViewerProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Auto scroll to bottom when new logs arrive
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);

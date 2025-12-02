@@ -1,35 +1,20 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import type { LogEntry, ChartData, DockerStats } from "./types";
 import RpsChart from "./components/RpsChart";
 import SystemLoadChart from "./components/SystemLoadChart";
 import AccessLogViewer from "./components/AccessLogViewer";
 import DockerStatsViewer from "./components/DockerStatsViewer";
-
-// Helper constants
-const MAX_HISTORY_POINTS = 120; // 2 minutes if 1 update/sec
+const MAX_HISTORY_POINTS = 120; 
 
 export default function App() {
-  // --- States ---
-  
-  // RPS
   const [currentRps, setCurrentRps] = useState(0);
   const [rpsHistory, setRpsHistory] = useState<ChartData[]>([]);
-
-  // System Load
   const [cpu, setCpu] = useState(0);
   const [mem, setMem] = useState(0);
   const [loadHistory, setLoadHistory] = useState<ChartData[]>([]);
-
-  // Logs
   const [logs, setLogs] = useState<LogEntry[]>([]);
-
-  // Docker
-  // Menyimpan history per nama container
   const [dockerHistories, setDockerHistories] = useState<Record<string, ChartData[]>>({});
-  // Menyimpan stats realtime terakhir untuk display angka
   const [dockerCurrentStats, setDockerCurrentStats] = useState<Record<string, {cpu: string, mem: string}>>({});
-
-  // WebSocket Logic
   useEffect(() => {
     const ws = new WebSocket("ws://host.docker.internal:8080");
 
@@ -46,20 +31,14 @@ export default function App() {
     ws.onmessage = (msg) => {
       try {
         const data = JSON.parse(msg.data);
-
-        // 1. RPS Stream
         if (data.stream === "rps_stream") {
           const rpsVal = Number(data.payload.rps);
           setCurrentRps(rpsVal);
           setRpsHistory((prev) => updateHistory(prev, rpsVal));
         }
-
-        // 2. Access Log Stream
         if (data.stream === "access_log_stream") {
-          setLogs((prev) => [...prev.slice(-100), data.payload]); // Keep last 100 logs
+          setLogs((prev) => [...prev.slice(-100), data.payload]); 
         }
-
-        // 3. Load Stream
         if (data.stream === "load_stream") {
           const cpuVal = Number(data.payload.cpu);
           const memVal = Number(data.payload.mem);
@@ -67,12 +46,8 @@ export default function App() {
           setMem(memVal);
           setLoadHistory((prev) => updateHistory(prev, cpuVal, memVal));
         }
-
-        // 4. Docker Stats Stream
         if (data.stream === "docker_stats_stream") {
           const payload: DockerStats = data.payload;
-          
-          // Parsing percentages from strings like "0.5%" to numbers
           const cpuNum = parseFloat(payload.cpu.replace('%', ''));
           const memNum = parseFloat(payload.memPercent.replace('%', ''));
           
@@ -84,11 +59,7 @@ export default function App() {
           setDockerHistories(prev => {
             const containerHistory = prev[payload.name] || [];
             const now = new Date().toLocaleTimeString();
-            
-            // Add new point
             const newHistory = [...containerHistory, { time: now, value: cpuNum, value2: memNum }];
-            
-            // Trim history
             if (newHistory.length > MAX_HISTORY_POINTS) {
                 newHistory.shift(); 
             }

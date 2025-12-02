@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState} from "react";
 import { AreaChart, Area, CartesianGrid, Tooltip, ResponsiveContainer, YAxis } from "recharts";
 import type { ChartData } from "../types";
-import { Box, Server } from "lucide-react";
+import { Box } from "lucide-react";
 
 interface DockerStatsViewerProps {
-  // Key adalah nama container, Value adalah array history chart
   dockerHistories: Record<string, ChartData[]>;
   currentStats: Record<string, { cpu: string, mem: string }>;
 }
@@ -13,7 +12,6 @@ export default function DockerStatsViewer({ dockerHistories, currentStats }: Doc
   const containerNames = Object.keys(dockerHistories);
   const [selectedContainer, setSelectedContainer] = useState<string>(containerNames[0] || "");
 
-  // Update selected container automatically if none selected initially and data comes in
   React.useEffect(() => {
     if (!selectedContainer && containerNames.length > 0) {
       setSelectedContainer(containerNames[0]);
