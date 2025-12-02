@@ -35,6 +35,21 @@ function parseMem(stat: any) {
   };
 }
 
+function calcNetwork(curr: any, prev: any) {
+  let rx = 0;
+  let tx = 0;
+  for (const iface of Object.values(curr.networks || {}) as Array<{ rx_bytes?: number; tx_bytes?: number }>) {
+    rx += iface.rx_bytes || 0;
+    tx += iface.tx_bytes || 0;
+  }
+  if (!prev?.net) return { rx: 0, tx: 0 };
+  return {
+    rx: rx - prev.net.rx,
+    tx: tx - prev.net.tx
+  };
+}
+
+
 const prevStats = new Map<string, any>();
 
 async function collectDocker() {
@@ -52,6 +67,7 @@ async function collectDocker() {
       const restartCount = info.State.RestartCount;
       const startedAt = new Date(info.State.StartedAt).getTime();
       const uptimeSec = Math.floor((Date.now() - startedAt) / 1000);
+      const net = calcNetwork(curr, prev);
 
       await redis.xAdd("docker_stats_stream", "*", {
         id: c.Id.slice(0, 12),
@@ -63,6 +79,9 @@ async function collectDocker() {
         memPercent: mem.percent.toString(),
         uptime: uptimeSec.toString(),
         restartCount: restartCount.toString(),
+        status: info.State.Status,
+        rx: net.rx.toString(),
+        tx: net.tx.toString(),
         timestamp: Date.now().toString()
       }, {
         TRIM: { strategy: "MAXLEN", threshold: 1000 }
