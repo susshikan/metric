@@ -32,10 +32,10 @@ async function startProxy() {
         const start = Date.now();
         res.on("finish", async () => {
             const duration = Date.now() - start;
-            if ((req.statusCode || 400) >= 400 && (req.statusCode || 400) < 500) {
+            if ((res.statusCode || 400) >= 400 && (res.statusCode || 400) < 500) {
                 error4xx++
-            } else if ((req.statusCode || 500) >= 500) {
-                error5xx
+            } else if ((res.statusCode || 500) >= 500) {
+                error5xx++
             }
             await redis.xAdd("access_log_stream", "*", {
                 method: req.method,
