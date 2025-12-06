@@ -30,8 +30,8 @@ async function start() {
   const streams = [
     { key: "rps_stream", id: "$" },
     { key: "access_log_stream", id: "$" },
-    { key: "load_stream", id: "$"},
-    { key: "docker_stats_stream", id: "$"}
+    { key: "load_stream", id: "$" },
+    { key: "docker_stats_stream", id: "$" }
   ];
 
   while (true) {
@@ -40,17 +40,18 @@ async function start() {
     if (!reply || reply.length === 0) {
       continue
     }
-    const stream = reply[0];
-    const { name, messages } = stream;
-    messages.forEach((msg: any) => {
-      const json = {
-        stream: name,
-        id: msg.id,
-        payload: msg.message,
-      };
-      console.log(json)
-      wss.clients.forEach(c => c.send(JSON.stringify(json)));
-    });
+    reply.forEach((stream: any) => {
+      const { name, messages } = stream;
+      messages.forEach((msg: any) => {
+        const json = {
+          stream: name,
+          id: msg.id,
+          payload: msg.message,
+        };
+        console.log(json)
+        wss.clients.forEach(c => c.send(JSON.stringify(json)));
+      });
+    })
   }
 }
 
