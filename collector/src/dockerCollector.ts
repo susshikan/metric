@@ -57,6 +57,11 @@ async function collectDocker() {
     const { data: containers } = await docker.get("/containers/json");
 
     for (const c of containers) {
+      
+      if(["metric-dashboard-1", "metric-collector-1", "metric-ws-server-1", "metric-redis-1", "metric-proxy-1"].includes(c.Names?.[0]?.replace("/", ""))){
+        continue
+      }
+        
       const { data: curr } = await docker.get(`/containers/${c.Id}/stats?stream=false`);
       const prev = prevStats.get(c.Id);
       const { data: info } = await docker.get(`/containers/${c.Id}/json`);
