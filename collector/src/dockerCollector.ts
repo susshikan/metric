@@ -64,7 +64,7 @@ async function collectDocker() {
 
       const cpu = calcCPU(curr, prev);
       const mem = parseMem(curr);
-      const restartCount = info.State.RestartCount;
+      const restartCount = info.State.RestartCount ?? 0;
       const startedAt = new Date(info.State.StartedAt).getTime();
       const uptimeSec = Math.floor((Date.now() - startedAt) / 1000);
       const net = calcNetwork(curr, prev);
@@ -86,7 +86,6 @@ async function collectDocker() {
       }, {
         TRIM: { strategy: "MAXLEN", threshold: 1000 }
       });
-
       prevStats.set(c.Id, curr);
     }
   } catch (err: any) {

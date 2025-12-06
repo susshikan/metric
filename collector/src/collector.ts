@@ -22,7 +22,7 @@ function parseNetDev() {
   return { totalRx, totalTx };
 }
 
-let prev = parseNetDev();
+//let prev = parseNetDev();
 async function main() {
     setInterval(async () => {
         const timestamp = Date.now().toString();
@@ -49,13 +49,14 @@ async function main() {
         }, {
             TRIM: { strategy: 'MINID', threshold: Date.now() - 5 * 60 * 1000 }
         });
-
+        /*
         let curr = parseNetDev()
         await redis.xAdd("network", "", {
             rx: (curr.totalRx - prev.totalRx).toString(),
             tx: (curr.totalTx - prev.totalTx).toString()
         })
         prev = curr
+        */
     }, 1000);
 }
 

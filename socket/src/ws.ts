@@ -18,8 +18,6 @@ type AccessLogPayload = {
 
 type SocketReply = | { stream: "rps_stream"; payload: RpsPayload } | { stream: "access_log_stream"; payload: AccessLogPayload };
 
-
-
 async function start() {
   const wss = new WebSocketServer({ port: 8080 });
   const redis = createClient({ url: "redis://redis:6379" });
